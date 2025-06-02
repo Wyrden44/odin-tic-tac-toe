@@ -13,37 +13,43 @@ const gameBoard = function() {
         board[x][y] = playerNr;
     }
 
+    const getPositionValue = (x, y) => {
+        return board[x][y];
+    }
+
     const checkWinner = () => {
         // horizontal
         for (let i=0; i<3; i++) {
-            if (board[i][0] === board[i][1] === board[i][2])
+            if (board[i][0] !== 0 && board[i][0] === board[i][1] && board[i][1] === board[i][2])
                 return board[i][0];
         }
         // vertical
         for (let i=0; i<3; i++) {
-            if (board[0][i] === board[0][i] === board[0][i])
+            if (board[0][i] !== 0 && board[0][i] === board[1][i] && board[1][i] === board[2][i])
                 return board[0][i];
         }
         // diagonal
-        if (board[0][0] === board[1][1] === board[2][2])
+        if (board[0][0] !== 0 && board[0][0] === board[1][1] && board[1][1] === board[2][2])
             return board[0][0];
+        if (board[0][2] !== 0 && board[0][2] === board[1][1] && board[2][0] === board[1][1])
+            return board[0][2];
         return false;
     }
 
     const checkGameOver = () => {
+        if (checkWinner()) {
+            return true;
+        }
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (board[i][j] === 0) 
                     return false;
             }            
         }
-        if (checkWinner()) {
-            return true;
-        } 
         return true;
     }
 
-    return { getBoard, updateBoard, checkWinner, checkGameOver }
+    return { getBoard, updateBoard, checkWinner, checkGameOver, getPositionValue }
 }
 
 function createPlayer(name, stoneType) {
@@ -58,6 +64,10 @@ const gameManager = function() {
     let activePlayer = player1;
 
     const playRound = (x, y) => {
+        if (!checkValidPosition(x, y)) {
+            return;
+        }
+
         board.updateBoard(x, y, activePlayer.stoneType);
 
         // switch players
@@ -69,7 +79,19 @@ const gameManager = function() {
     }
 
     const getGameWinner = () => {
-        return (board.checkWinner() === player1.stoneType) ? player1.name : player2.name;
+        winner = board.checkWinner();
+        if (winner === false) {
+            return undefined;
+        }
+        return (winner === player1.stoneType) ? player1.name : player2.name;
+    }
+
+    const checkValidPosition = (x, y) => {
+        return !board.getPositionValue(x, y);
+    }
+
+    const getBoard = () => {
+        return board.getBoard();
     }
 
     const reset = () => {
@@ -79,26 +101,89 @@ const gameManager = function() {
 
     const getGameOverMessage = (winner) => {
         // tie
-        if (!winner)
-            return `${Winner} won!`
+        if (winner)
+            return `${winner} won!`
         return "Tie!"
     }
 
-    return { playRound, gameOver, getGameWinner, reset, getGameOverMessage };
-}();
+    return { playRound, gameOver, getGameWinner, reset, getGameOverMessage, getBoard };
+}
 
 const displayManager = function() {
-    const createBoard = () => {
+    const game = gameManager();
 
+    const boardContainer = document.querySelector("#board-container");
+
+    const cells = []
+
+    let lockBoard = false;
+    
+    const createBoard = () => {
+        for (let i = 0; i < 3; i++) {
+            // add row
+            cells.push([]);
+            let row = document.createElement("div");
+            row.classList.add(`row`);
+            for (let j=0; j<3; j++) {
+                // add cell
+                let cell = document.createElement("div");
+                cell.classList.add(`cell`);
+                cell.id = `cell-${i}-${j}`;
+                row.appendChild(cell);
+                cells[i].push(cell)
+            }
+            boardContainer.appendChild(row);
+        }
     }
 
-    const resetBoard = () => {
-
+    const getCellMarkerType = (value) => {
+        if (value === 1)
+            return "x";
+        else if (value === 2)
+            return "o";
+        return "";
     }
 
     const updateBoard = () => {
-
+        let board = game.getBoard();
+        console.log(board);
+        for (let i = 0; i < 3; i++) {
+            for (let j=0; j<3; j++) {
+                cells[i][j].textContent = getCellMarkerType(board[i][j]);
+            }
+        }
     }
 
-    return {};
+    const reset = () => {
+        game.reset();
+        
+        lockBoard = false;
+        updateBoard();
+    }
+
+    const playGame = (x, y) => {
+        game.playRound(x, y);
+        updateBoard();
+
+        if (game.gameOver()) {
+            let message = game.getGameOverMessage(game.getGameWinner());
+            console.log(message);
+            lockBoard = true;
+        }
+    }
+
+    boardContainer.addEventListener("click", (e) => {
+        let target = e.target;
+
+        if (target.classList.contains("cell")) {
+            let [_, x, y] = target.id.split("-");
+            
+            if (!lockBoard)
+                playGame(x, y);
+        }
+    });
+
+    createBoard();
+
+    return;
 }();
