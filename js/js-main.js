@@ -1,8 +1,15 @@
 const gameBoard = function() {
-    const board = [];
+    let board = [];
 
-    for (let index = 0; index < 3; index++) {
-        board.push([0, 0, 0]);   
+    const createBoard = () => {
+        for (let index = 0; index < 3; index++) {
+            board.push([0, 0, 0]);   
+        }
+    }
+    
+    const reset = () => {
+        board = [];
+        createBoard();
     }
 
     const getBoard = () => {
@@ -49,7 +56,9 @@ const gameBoard = function() {
         return true;
     }
 
-    return { getBoard, updateBoard, checkWinner, checkGameOver, getPositionValue }
+    createBoard();
+
+    return { getBoard, updateBoard, checkWinner, checkGameOver, getPositionValue, reset }
 }
 
 function createPlayer(name, stoneType) {
@@ -106,7 +115,14 @@ const gameManager = function() {
         return "Tie!"
     }
 
-    return { playRound, gameOver, getGameWinner, reset, getGameOverMessage, getBoard };
+    const setPlayerName = (playerNr, newName) => {
+        if (playerNr === 1)
+            player1.name = newName;
+        else if (playerNr === 2)
+            player2.name = newName;
+    }
+
+    return { playRound, gameOver, getGameWinner, reset, getGameOverMessage, getBoard, setPlayerName };
 }
 
 const displayManager = function() {
@@ -114,7 +130,13 @@ const displayManager = function() {
 
     const boardContainer = document.querySelector("#board-container");
 
-    const cells = []
+    const resetButton = document.querySelector("#reset");
+    const renamePlayerButtons = document.querySelectorAll(".set-name");
+    const dialog = document.querySelector("dialog");
+    const playerOneName = document.querySelector("#player-one-name");
+    const playerTwoName = document.querySelector("#player-two-name");
+
+    const cells = [];
 
     let lockBoard = false;
     
@@ -146,7 +168,6 @@ const displayManager = function() {
 
     const updateBoard = () => {
         let board = game.getBoard();
-        console.log(board);
         for (let i = 0; i < 3; i++) {
             for (let j=0; j<3; j++) {
                 cells[i][j].textContent = getCellMarkerType(board[i][j]);
@@ -154,7 +175,7 @@ const displayManager = function() {
         }
     }
 
-    const reset = () => {
+    const resetAll = () => {
         game.reset();
         
         lockBoard = false;
@@ -181,6 +202,37 @@ const displayManager = function() {
             if (!lockBoard)
                 playGame(x, y);
         }
+    });
+
+    resetButton.addEventListener("click", e => {
+        resetAll();
+    });
+
+    renamePlayerButtons.forEach(element => {
+        element.addEventListener("click", (e) => {
+            dialog.showModal();
+            if (element.id.includes("player-one")) {
+                dialog.classList.add("player-one");
+            }
+            else {
+                dialog.classList.add("player-two");
+            }
+        });
+    });
+
+    dialog.addEventListener("close", e => {
+        const name = document.getElementById("name").value;
+        if (dialog.classList.contains("player-one")) {
+            game.setPlayerName(1, name);
+            playerOneName.textContent = name;
+        }
+        else {
+            game.setPlayerName(1, name);
+            playerTwoName.textContent = name;
+        }
+
+        dialog.className = "";
+        dialog.querySelector("form").reset();
     });
 
     createBoard();

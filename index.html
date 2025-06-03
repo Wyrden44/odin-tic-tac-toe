@@ -13,7 +13,7 @@
             <button class="set-name" id="set-player-one-name">Set Name</button>
         </div>
         <div class="player-section">
-            <h1>Player 2: <span id="player-one-name" class="player-name"></span></h1>
+            <h1>Player 2: <span id="player-two-name" class="player-name"></span></h1>
             <button class="set-name" id="set-player-two-name">Set Name</button>
         </div>
     </div>
@@ -21,6 +21,15 @@
         
     </div>
     <button id="reset">Reset</button>
+
+    <dialog id="set-name-dialog">
+        <form method="dialog">
+            <label for="name">Name: </label>
+            <input type="text" name="name" id="name" required>
+            <button type="submit">Submit</button>
+        </form>
+    </dialog>
+
     <script src="./js/js-main.js"></script>
 </body>
 </html>
