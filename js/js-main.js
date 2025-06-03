@@ -232,7 +232,7 @@ const displayManager = function() {
             playerOneName.textContent = name;
         }
         else {
-            game.setPlayerName(1, name);
+            game.setPlayerName(2, name);
             playerTwoName.textContent = name;
         }
 
