@@ -1,12 +1,15 @@
 * {
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, p, button, div {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
+    font-family: Arial, Helvetica, sans-serif;
+
     display: flex;
     height: 100vh;
 
@@ -40,6 +43,10 @@ body {
     font-weight: bold;
 }
 
+.cell:hover {
+    background-color: #7e97e933;
+}
+
 h1 {
     font-size: 1.5rem;
 }
@@ -64,10 +71,67 @@ h1 {
     border-radius: 5px;
 }
 
+.container {
+    border: 2px solid black;
+}
+
+dialog {
+    border: none;
+    border-radius: 10px;
+    box-shadow: #333 10px 10px 20px -10px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+form label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+form input {
+    padding: 10px 5px;
+    font-size: 1.1rem;
+    letter-spacing: 0.08rem;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+form button {
+    padding: 5px 20px;
+    border: 1px solid;
+    background-color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 10px;
+}
+
+input:valid {
+    border: 2px solid greenyellow;
+}
+
+input:focus, button:focus {
+    outline: 1px solid #7e97e9;
+}
+
+::backdrop {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
 #reset {
     padding: 10px 35px;
     border: 2px solid black;
     border-radius: 10px;
     font-size: 1.1rem;
     background-color: white;
+}
+
+button:hover {
+    border-color: #7e97e9 !important;
 }
