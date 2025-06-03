@@ -135,6 +135,7 @@ const displayManager = function() {
     const dialog = document.querySelector("dialog");
     const playerOneName = document.querySelector("#player-one-name");
     const playerTwoName = document.querySelector("#player-two-name");
+    const winningMessage = document.querySelector("#win-message")
 
     const cells = [];
 
@@ -180,6 +181,8 @@ const displayManager = function() {
         
         lockBoard = false;
         updateBoard();
+
+        winningMessage.textContent = "";
     }
 
     const playGame = (x, y) => {
@@ -188,7 +191,9 @@ const displayManager = function() {
 
         if (game.gameOver()) {
             let message = game.getGameOverMessage(game.getGameWinner());
-            console.log(message);
+            // display
+            winningMessage.textContent = message;
+
             lockBoard = true;
         }
     }
